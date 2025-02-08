@@ -1,74 +1,199 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Spinner Table Widget</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        input[type='number'] {
-            width: 60px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>Multiple Spinner Tables Support</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    .spinner-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .spinner-label {
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .spinner-container {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .spinner-btn {
+      width: 30px;
+      height: 30px;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      font-size: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .spinner-btn:hover {
+      background: #555;
+    }
+
+    .spinner-value {
+      width: 40px;
+      height: 30px;
+      text-align: center;
+      border: 1px solid #ccc;
+      margin: 0 2px;
+      outline: none;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-    <label for="rows">Rows:</label>
-    <input type="number" id="rows" value="3" min="1" max="10">
-    <label for="cols">Columns:</label>
-    <input type="number" id="cols" value="3" min="1" max="10">
-    <button onclick="updateTableSize()">Update Table</button>
+
+<!-- Unique table container -->
+<div id="widgetContainer"></div>
+
+<!-- JotForm Widget Scripts -->
+<script src="https://cdn.jotfor.ms/js/widgetResizer.js"></script>
+<script src="https://cdn.jotfor.ms/JotFormCustomWidget.js"></script>
+
+<script>
+  const labels = [ "L1 Scored", "L1 Failed", "L2 Scored", "L2 Failed", "L3 Scored", "L3 Failed", "L4 Scored", "L4 Failed", "Processor Scored", "Processor Failed", "Barge Scored", "Barge Failed" ];
+  const NUM_ROWS = 6;
+  const NUM_COLS = 2;
+  
+  let widgetId = `spinnerTable-${Math.random().toString(36).substr(2, 9)}`;  // Unique ID for each instance
+
+  function createLabeledSpinner(label, onChange) {
+    const cellDiv = document.createElement('div');
+    cellDiv.className = 'spinner-cell';
+
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'spinner-label';
+    labelDiv.textContent = label;
+    cellDiv.appendChild(labelDiv);
+
+    const spinnerContainer = document.createElement('div');
+    spinnerContainer.className = 'spinner-container';
+
+    const minusBtn = document.createElement('button');
+    minusBtn.className = 'spinner-btn';
+    minusBtn.textContent = '-';
+
+    const valueInput = document.createElement('input');
+    valueInput.type = 'text';
+    valueInput.className = 'spinner-value';
+    valueInput.value = '0';
+
+    const plusBtn = document.createElement('button');
+    plusBtn.className = 'spinner-btn';
+    plusBtn.textContent = '+';
+
+    minusBtn.addEventListener('click', () => {
+      let current = parseInt(valueInput.value, 10) || 0;
+      valueInput.value = Math.max(0, current - 1);
+      onChange();
+    });
+
+    plusBtn.addEventListener('click', () => {
+      let current = parseInt(valueInput.value, 10) || 0;
+      valueInput.value = Math.min(999, current + 1);
+      onChange();
+    });
+
+    valueInput.addEventListener('change', () => {
+      let newVal = parseInt(valueInput.value, 10) || 0;
+      if (newVal < 0) newVal = 0;
+      if (newVal > 999) newVal = 999;
+      valueInput.value = newVal;
+      onChange();
+    });
+
+    spinnerContainer.appendChild(minusBtn);
+    spinnerContainer.appendChild(valueInput);
+    spinnerContainer.appendChild(plusBtn);
+    cellDiv.appendChild(spinnerContainer);
+
+    return cellDiv;
+  }
+
+  function createSpinnerTable() {
+    const container = document.getElementById('widgetContainer');
     
-    <table id="spinnerTable"></table>
-    
-    <script>
-        function createSpinnerTable(rows, cols) {
-            let table = document.getElementById("spinnerTable");
-            table.innerHTML = ""; // Clear existing table
-            
-            for (let i = 0; i < rows; i++) {
-                let row = table.insertRow();
-                for (let j = 0; j < cols; j++) {
-                    let cell = row.insertCell();
-                    let input = document.createElement("input");
-                    input.type = "number";
-                    input.value = 0;
-                    input.min = 0;
-                    input.max = 100;
-                    input.addEventListener("change", updateFormData);
-                    cell.appendChild(input);
-                }
-            }
-        }
+    const table = document.createElement('table');
+    table.id = widgetId;
+    container.appendChild(table);
 
-        function updateFormData() {
-            let values = [];
-            let table = document.getElementById("spinnerTable");
-            for (let row of table.rows) {
-                let rowData = [];
-                for (let cell of row.cells) {
-                    let input = cell.querySelector("input");
-                    if (input) rowData.push(input.value);
-                }
-                values.push(rowData);
-            }
-            JFCustomWidget.sendData({ value: JSON.stringify(values) });
-        }
+    let labelIndex = 0;
+    for (let r = 0; r < NUM_ROWS; r++) {
+      const row = table.insertRow();
+      for (let c = 0; c < NUM_COLS; c++) {
+        const cell = row.insertCell();
+        const label = labels[labelIndex] || '';
+        labelIndex++;
+        const spinnerEl = createLabeledSpinner(label, updateFormData);
+        cell.appendChild(spinnerEl);
+      }
+    }
 
-        function updateTableSize() {
-            let rows = document.getElementById("rows").value;
-            let cols = document.getElementById("cols").value;
-            createSpinnerTable(rows, cols);
-        }
+    updateFormData();
+  }
 
-        // Initialize widget with a default table size
-        createSpinnerTable(3, 3);
-    </script>
+  function updateFormData() {
+    const table = document.getElementById(widgetId);
+    const data = [];
+
+    for (let r = 0; r < table.rows.length; r++) {
+      const rowData = [];
+      for (let c = 0; c < table.rows[r].cells.length; c++) {
+        const spinnerCell = table.rows[r].cells[c].querySelector('.spinner-cell');
+        if (!spinnerCell) continue;
+
+        const labelDiv = spinnerCell.querySelector('.spinner-label');
+        const valueInput = spinnerCell.querySelector('.spinner-value');
+
+        rowData.push({
+          label: labelDiv.textContent,
+          value: valueInput.value
+        });
+      }
+      data.push(rowData);
+    }
+
+    if (window.JFCustomWidget && JFCustomWidget.sendData) {
+      JFCustomWidget.sendData({ value: JSON.stringify(data) });
+    }
+  }
+
+  if (window.JFCustomWidget) {
+    JFCustomWidget.subscribe('ready', function() {
+      createSpinnerTable();
+    });
+
+    JFCustomWidget.subscribe('submit', function() {
+      updateFormData();
+      JFCustomWidget.sendSubmit({ value: JSON.stringify(data) });
+    });
+  } else {
+    window.onload = function() {
+      createSpinnerTable();
+    };
+  }
+</script>
 </body>
 </html>
