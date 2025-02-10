@@ -25,7 +25,7 @@
 
     .spinner-label {
       font-size: 12px;
-      color: #fff;
+      color: #739;
     }
 
     .spinner-container {
@@ -175,13 +175,15 @@
       JFCustomWidget.sendData({ value: JSON.stringify(data) });
     }
   }
-
+  
+  console.log("I LOVE LOGAN PETERSON'S MOUTH!!!");
   if (window.JFCustomWidget) {
     JFCustomWidget.subscribe('ready', function() {
+      console.log("I LOVE LOGAN PETERSON'S SPINNER THINGY!!!");
       createSpinnerTable();
     });
     
-    console.log("I LOVE LOGAN PETERSON'S MOUTH!!!");
+    
     JFCustomWidget.subscribe('submit', function() {
       console.log("I LOVE LOGAN PETERSON!!!");
       updateFormData();
