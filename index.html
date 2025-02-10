@@ -176,8 +176,7 @@
     }
   }
   
-  console.log("I LOVE LOGAN PETERSON'S MOUTH!!!");
-  if (window.JFCustomWidget) {
+  if (true) {
     JFCustomWidget.subscribe('ready', function() {
       console.log("I LOVE LOGAN PETERSON'S SPINNER THINGY!!!");
       createSpinnerTable();
@@ -190,12 +189,10 @@
       console.log("Submitting data to JotForm...");
       JFCustomWidget.sendSubmit({ value: JSON.stringify(data) });
     });
-  } else {
-    window.onload = function() {
-      console.log("CREATING LOGANS TABLEEEEEEEEEEEEEEEEEEE");
+  }; 
+  window.onload = function() {
       createSpinnerTable();
     };
-  }
 </script>
 <script type="text/javascript">
   (function() {
