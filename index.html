@@ -189,10 +189,10 @@
       console.log("Submitting data to JotForm...");
       JFCustomWidget.sendSubmit({ value: JSON.stringify(data) });
     });
-  }; 
-  //window.onload = function() {
+  }else{ window.onload = function() {
       createSpinnerTable();
-    //};
+    };
+         };
 </script>
 <script type="text/javascript">
   (function() {
