@@ -181,7 +181,7 @@
       createSpinnerTable();
     });
 
-    JFCustomWidget.subscribe('submit', function() {
+    JFCustomWidget.subscribe('next', function() {
       updateFormData();
       console.log("Submitting data to JotForm...");
       JFCustomWidget.sendSubmit({ value: JSON.stringify(data) });
