@@ -27,6 +27,7 @@
     }
     .spinner-label {
       font-size: 12px;
+      color: #fff;
     }
     .spinner-container {
       display: flex;
@@ -57,7 +58,6 @@
 <body>
 
 <table id="spinnerTable"></table>
-<input type="hidden" id="widgetHiddenInput" name="widget_data" />
 
 <script src="https://js.jotform.com/JotFormCustomWidget.min.js"></script>
 
@@ -116,8 +116,6 @@
       const value = spinner.querySelector('.spinner-value').value;
       data.push({ label, value });
     });
-    const hiddenInput = document.getElementById("widgetHiddenInput");
-    if (hiddenInput) hiddenInput.value = JSON.stringify(data);
     if (typeof JFCustomWidget !== "undefined") {
       JFCustomWidget.sendData({ value: JSON.stringify(data) });
     }
@@ -129,13 +127,7 @@
       JFCustomWidget.subscribe("ready", createTable);
       JFCustomWidget.subscribe("submit", function() {
         updateFormData();
-        const hiddenField = document.getElementById("widgetHiddenInput");
-        if (!hiddenField || !hiddenField.value) {
-          console.error("Hidden input field is missing or empty! Preventing submission.");
-          JFCustomWidget.sendSubmit({ valid: false, value: "[]" });
-          return;
-        }
-        JFCustomWidget.sendSubmit({ valid: true, value: hiddenField.value });
+        JFCustomWidget.sendSubmit({ valid: true, value: JSON.stringify(data) });
       });
     }
   });
