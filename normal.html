@@ -36,23 +36,32 @@
 <body>
 
 <div class="spinner-container">
-    <button class="spinner-btn" onclick="decreaseValue()">-</button>
+    <button class="spinner-btn" id="decreaseBtn">-</button>
     <input type="number" class="spinner-input" id="spinner" value="0" min="0">
-    <button class="spinner-btn" onclick="increaseValue()">+</button>
+    <button class="spinner-btn" id="increaseBtn">+</button>
 </div>
 
 <script>
-    function increaseValue() {
+    document.addEventListener("DOMContentLoaded", function () {
         let input = document.getElementById("spinner");
-        input.value = parseInt(input.value) + 1;
-    }
+        let increaseBtn = document.getElementById("increaseBtn");
+        let decreaseBtn = document.getElementById("decreaseBtn");
 
-    function decreaseValue() {
-        let input = document.getElementById("spinner");
-        if (parseInt(input.value) > parseInt(input.min)) {
-            input.value = parseInt(input.value) - 1;
+        if (!input || !increaseBtn || !decreaseBtn) {
+            console.error("One or more spinner elements not found!");
+            return;
         }
-    }
+
+        increaseBtn.addEventListener("click", function () {
+            input.value = parseInt(input.value) + 1;
+        });
+
+        decreaseBtn.addEventListener("click", function () {
+            if (parseInt(input.value) > parseInt(input.min)) {
+                input.value = parseInt(input.value) - 1;
+            }
+        });
+    });
 </script>
 
 </body>
